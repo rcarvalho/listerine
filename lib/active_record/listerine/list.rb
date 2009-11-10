@@ -39,16 +39,16 @@ module ActiveRecord
         def move_to(position) # position is 1-based index based on location in the list. This position is not the same as what is stored in the +position+ column.
           pos = position.to_i
           collection = self.send(listerine_parent_symbol).send(listerine_collection_symbol)
-          return if pos < 1 || collection.count == 1 # don't move it if we only have one item in the collection or the position is negative
+          return if collection.count == 1 # don't move it if we only have one item in the collection
           new_pos = 0
-          if pos == 1 # Move to top
+          if pos <= 1 # Move to top
             new_pos = collection.first.position / 2.0
           elsif pos >= collection.count # Move to end if the position is the end or greater
             new_pos = collection.last.position + 1
           else # Move to somewhere in the middle of the list
-            item_pos = collection[pos].position 
-            prev_item_pos = collection[pos-1].position
-            new_pos = (item_pos - prev_item_pos) / 2.0
+            item_pos = collection[pos-1].position 
+            prev_item_pos = collection[pos-2].position
+            new_pos = ((item_pos - prev_item_pos) / 2.0) + prev_item_pos
           end
           listerine_class.update_all("position = #{new_pos}", "id=#{self.id}")
           cleanup_positions! if new_pos < listerine_min_threshold # once we hit this threshold we need to cleanup the positions on all the items in the list
@@ -71,12 +71,16 @@ module ActiveRecord
         
         private
           def set_position_bottom
+            self.position = get_bottom_position
+          end     
+
+          def get_bottom_position
             collection = self.send(listerine_parent_symbol).send(listerine_collection_symbol)
             new_pos = collection.last && collection.last.position # set new position to last position
             new_pos ||= 0 # set to zero if list is empty
             new_pos += 1 # increment position
-            self.position = new_pos
-          end     
+            new_pos            
+          end
       end
     end
   end
