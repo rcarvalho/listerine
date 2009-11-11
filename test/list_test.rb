@@ -53,12 +53,12 @@ class ListTest < Test::Unit::TestCase
   end  
 
   def test_add_some_items
-    2000.downto(1).each do |num|
+    100.downto(1).each do |num|
       item = @thing.items.create(:name => num.to_s)
       item.move_to(1)
     end
   
-    assert_equal (1..2000).to_a, @thing.reload.items.map{|i| i.name.to_i}
+    assert_equal (1..100).to_a, @thing.reload.items.map{|i| i.name.to_i}
 
     @thing.items.first.cleanup_positions!
     @thing.items(true).each_with_index do |item, idx|
@@ -73,8 +73,8 @@ class ListTest < Test::Unit::TestCase
     end
 
     first_item = @thing.items.first
-    first_item.move_to(5) # move to end position
-    assert_equal ["2", "3", "4", "1", "5", "6", "7", "8", "9", "10"], @thing.items(true).map(&:name)
+    first_item.move_to(5) # move to position 5
+    assert_equal ["2", "3", "4", "5", "1", "6", "7", "8", "9", "10"], @thing.items(true).map(&:name)
   end
 
   def test_add_some_items_and_then_insert_at_the_end

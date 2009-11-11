@@ -46,6 +46,7 @@ module ActiveRecord
           elsif pos >= collection.count # Move to end if the position is the end or greater
             new_pos = collection.last.position + 1
           else # Move to somewhere in the middle of the list
+            pos += 1 if self.position < collection[pos-1].position
             item_pos = collection[pos-1].position 
             prev_item_pos = collection[pos-2].position
             new_pos = ((item_pos - prev_item_pos) / 2.0) + prev_item_pos
