@@ -1,7 +1,9 @@
 Listerine
 ==========
 
-Listerine is a fast alternative to acts_as_list because the item that is being inserted or moved is the only one touched.  It does not reorder items below itself.  To do this you need to have a +position+ column defined as a float on the mapped database table.  Then, run a background job nightly to cleanup positions. 
+Listerine is a fast alternative to acts_as_list because the item that is being inserted or moved is the 
+only one touched.  It does not reorder items below itself.  To do this you need to have a +position+ column 
+defined as a float on the mapped database table.
 
 
 Example
@@ -13,13 +15,28 @@ Example
 
   class Task < ActiveRecord::Base
     belongs_to :task_list
-    listerine :tasks, :task_list
+    listerine :task_list, :tasks
   end
 
   first_task = task_list.tasks.create(:description => 'first task') # inserts item to the bottom of list by default
-  first_task.move_to(3) # move to position 3
-  first_task.move_to_top # move to top
+  first_task.move_to 3 # move to position 3
+  first_task.move_to_top # move to top (same as move_to(1) )
   first_task.move_to_bottom # move to bottom
 
+  any_task.cleanup_positions!
+  
+Notes
+=====
 
-Copyright (c) 2009 Rodney Carvalho and Dennis Collinson, released under the MIT license
+The float gives us a resolution up to 1074 inserts in between two items.  We automatically re-index 
+the entire list after 1000 inserts.  But, you can customize this by doing a cleanup_positions!
+manually in a background or cron job so your user never experiences a full list re-order.
+
+
+Credits
+=======
+
+Inspired by Dennis Collinson
+
+
+Copyright (c) 2009 Rodney Carvalho, released under the MIT license
