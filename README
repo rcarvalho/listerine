@@ -13,7 +13,7 @@ Example
 
   class Task < ActiveRecord::Base
     belongs_to :task_list
-    listerine :tasks, :todo_list
+    listerine :tasks, :task_list
   end
 
   first_task = task_list.tasks.create(:description => 'first task') # inserts item to the bottom of list by default
